@@ -13,7 +13,7 @@ import {
 import { Heart, ArrowLeft, Sparkles, TrendingUp, Award } from "lucide-react";
 import { format, subDays } from "date-fns";
 import { User } from "@supabase/supabase-js";
-import { EnrichedUserHabit, InsightsData } from "../../types";
+import { EnrichedUserHabit, HabitStat, InsightsData } from "../../types";
 
 export default function Insights() {
   const router = useRouter();
@@ -21,10 +21,6 @@ export default function Insights() {
   const [userHabits, setUserHabits] = useState<EnrichedUserHabit[]>([]);
   const [insights, setInsights] = useState<InsightsData | null>(null);
   const [loading, setLoading] = useState(true);
-
-     useEffect(() => {
-       loadInsights();
-     }, []);
 
   const loadInsights = async () => {
     const currentUser = await getUser();
@@ -54,9 +50,9 @@ export default function Insights() {
     );
 
     // Calculate insights
-    const habitStats: Record<string, any> = {};
+    const habitStats: Record<string, HabitStat> = {};
     let totalCompleted = 0;
-    let totalPossible = enrichedHabits.length * 7;
+    const totalPossible = enrichedHabits.length * 7;
 
     enrichedHabits.forEach((habit) => {
       const habitCheckins =
@@ -84,7 +80,7 @@ export default function Insights() {
 
     // Find strongest habit
     const sortedHabits = Object.values(habitStats).sort(
-      (a: any, b: any) => b.consistency - a.consistency
+      (a, b) => b.consistency - a.consistency
     );
     const strongestHabit = sortedHabits[0] || null;
 
@@ -100,11 +96,15 @@ export default function Insights() {
     setLoading(false);
   };
 
+  useEffect(() => {
+    loadInsights();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F8F9FA] flex items-center justify-center">
-        <div className="text-[#2C3E50]">Generating insights...</div>
+      <div className="min-h-screen bg-gradient-to-br from-[#E8F4F8] to-[#F9FAFB] flex items-center justify-center">
+        <div className="text-[#1F2937]">Generating insights...</div>
       </div>
     );
   }
@@ -114,22 +114,22 @@ export default function Insights() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA]">
+    <div className="min-h-screen bg-gradient-to-br from-[#E8F4F8] to-[#F9FAFB]">
       {/* Header */}
-      <header className="bg-white border-b border-[#B8C5D0] border-opacity-20">
+      <header className="bg-white border-b border-[#E5E7EB]">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button
               onClick={() => router.push("/dashboard")}
-              className="w-10 h-10 rounded-full hover:bg-[#B8C5D0] hover:bg-opacity-10 flex items-center justify-center transition-colors"
+              className="w-10 h-10 rounded-xl hover:bg-[#E8F4F8] flex items-center justify-center transition-colors"
             >
-              <ArrowLeft className="w-5 h-5 text-[#2C3E50]" />
+              <ArrowLeft className="w-5 h-5 text-[#1F2937]" />
             </button>
-            <div className="flex items-center gap-2">
-              <Heart className="w-6 h-6 text-[#5FB3B3]" />
-              <span className="text-xl font-semibold text-[#2C3E50]">
-                Insights
-              </span>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[#0F4C81] flex items-center justify-center">
+                <Heart className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-xl font-bold text-[#1F2937]">Insights</span>
             </div>
           </div>
         </div>
@@ -137,18 +137,18 @@ export default function Insights() {
 
       <main className="max-w-4xl mx-auto px-6 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-[#2C3E50] mb-2">
+          <h1 className="text-3xl font-bold text-[#1F2937] mb-2">
             Weekly Insights
           </h1>
-          <p className="text-[#2C3E50] opacity-70">
+          <p className="text-[#64748B]">
             Your gentle health companion reflects on your week
           </p>
         </div>
 
         {/* Main Encouragement Card */}
-        <div className="bg-gradient-to-br from-[#5FB3B3] to-[#4FA3A3] rounded-2xl p-8 mb-6 text-white">
+        <div className="bg-gradient-to-br from-[#0F4C81] to-[#0D3F6A] rounded-2xl p-8 mb-6 text-white shadow-xl shadow-[#0F4C81]/20">
           <div className="flex items-start gap-4 mb-6">
-            <div className="w-14 h-14 rounded-full bg-white bg-opacity-20 flex items-center justify-center flex-shrink-0">
+            <div className="w-14 h-14 rounded-xl bg-white bg-opacity-20 flex items-center justify-center flex-shrink-0">
               <Sparkles className="w-7 h-7" />
             </div>
             <div className="flex-1">
@@ -164,7 +164,7 @@ export default function Insights() {
 
           <div className="bg-white bg-opacity-20 rounded-xl p-4">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-medium">Overall Consistency</span>
+              <span className="text-sm font-semibold">Overall Consistency</span>
               <span className="text-2xl font-bold">
                 {insights.overallConsistency}%
               </span>
@@ -180,19 +180,19 @@ export default function Insights() {
 
         {/* Strongest Habit */}
         {insights.strongestHabit && insights.strongestHabit.consistency > 0 && (
-          <div className="bg-white rounded-2xl p-6 mb-6 border border-[#B8C5D0] border-opacity-10">
+          <div className="bg-white rounded-2xl p-6 mb-6 shadow-md border border-[#E5E7EB]">
             <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-full bg-[#F5A97F] bg-opacity-10 flex items-center justify-center flex-shrink-0">
-                <Award className="w-6 h-6 text-[#F5A97F]" />
+              <div className="w-12 h-12 rounded-xl bg-[#FBBF24] bg-opacity-10 flex items-center justify-center flex-shrink-0">
+                <Award className="w-6 h-6 text-[#FBBF24]" />
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-[#2C3E50] mb-2">
+                <h3 className="text-lg font-semibold text-[#1F2937] mb-2">
                   Your Strongest Habit
                 </h3>
                 <div className="flex items-center gap-3">
                   {insights.strongestHabit.habit.icon && (
                     <div
-                      className="w-10 h-10 rounded-lg flex items-center justify-center"
+                      className="w-10 h-10 rounded-xl flex items-center justify-center"
                       style={{
                         backgroundColor: `${insights.strongestHabit.habit.color}20`,
                       }}
@@ -211,10 +211,10 @@ export default function Insights() {
                     </div>
                   )}
                   <div>
-                    <p className="font-semibold text-[#2C3E50]">
+                    <p className="font-semibold text-[#1F2937]">
                       {insights.strongestHabit.habit.habit_name}
                     </p>
-                    <p className="text-sm text-[#2C3E50] opacity-70">
+                    <p className="text-sm text-[#64748B]">
                       {insights.strongestHabit.completedCount} days this week (
                       {insights.strongestHabit.consistency}%)
                     </p>
@@ -226,14 +226,14 @@ export default function Insights() {
         )}
 
         {/* Habit Breakdown */}
-        <div className="bg-white rounded-2xl p-6 mb-6 border border-[#B8C5D0] border-opacity-10">
+        <div className="bg-white rounded-2xl p-6 mb-6 shadow-md border border-[#E5E7EB]">
           <div className="flex items-center gap-2 mb-6">
-            <TrendingUp className="w-5 h-5 text-[#5FB3B3]" />
-            <h2 className="font-semibold text-[#2C3E50]">Habit Breakdown</h2>
+            <TrendingUp className="w-5 h-5 text-[#0F4C81]" />
+            <h2 className="font-semibold text-[#1F2937]">Habit Breakdown</h2>
           </div>
 
           <div className="space-y-6">
-            {Object.values(insights.habitStats).map((stat: any) => {
+            {Object.values(insights.habitStats).map((stat) => {
               const Icon = stat.habit.icon;
               const daysText = stat.completedCount === 1 ? "day" : "days";
 
@@ -241,7 +241,7 @@ export default function Insights() {
                 <div key={stat.habit.habit_key} className="space-y-3">
                   <div className="flex items-start gap-3">
                     <div
-                      className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                      className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
                       style={{ backgroundColor: `${stat.habit.color}20` }}
                     >
                       <Icon
@@ -252,19 +252,19 @@ export default function Insights() {
                     <div className="flex-1">
                       <div className="flex justify-between items-start mb-2">
                         <div>
-                          <h3 className="font-semibold text-[#2C3E50]">
+                          <h3 className="font-semibold text-[#1F2937]">
                             {stat.habit.habit_name}
                           </h3>
-                          <p className="text-sm text-[#2C3E50] opacity-70">
+                          <p className="text-sm text-[#64748B]">
                             You stayed consistent {stat.completedCount}{" "}
                             {daysText} this week
                           </p>
                         </div>
-                        <span className="text-lg font-bold text-[#2C3E50]">
+                        <span className="text-lg font-bold text-[#1F2937]">
                           {stat.consistency}%
                         </span>
                       </div>
-                      <div className="h-2 bg-[#B8C5D0] bg-opacity-10 rounded-full overflow-hidden">
+                      <div className="h-2 bg-[#E5E7EB] rounded-full overflow-hidden">
                         <div
                           className="h-full rounded-full transition-all duration-500"
                           style={{
@@ -282,12 +282,12 @@ export default function Insights() {
         </div>
 
         {/* Closing Encouragement */}
-        <div className="bg-[#B4A7D6] bg-opacity-10 rounded-2xl p-6 text-center">
-          <Sparkles className="w-8 h-8 text-[#B4A7D6] mx-auto mb-3" />
-          <p className="text-[#2C3E50] font-medium mb-2">
-            Remember: Progress isn't perfection
+        <div className="bg-gradient-to-r from-[#A78BFA] to-[#0F4C81] bg-opacity-10 rounded-2xl p-6 text-center shadow-md">
+          <Sparkles className="w-8 h-8 text-[#A78BFA] mx-auto mb-3" />
+          <p className="text-[#1F2937] font-semibold mb-2">
+            Remember: Progress isn&apos;t perfection
           </p>
-          <p className="text-sm text-[#2C3E50] opacity-70">
+          <p className="text-sm text-[#64748B]">
             Every small action you take is building a healthier version of
             yourself.
           </p>

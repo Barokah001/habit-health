@@ -31,10 +31,6 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const today = format(new Date(), "yyyy-MM-dd");
 
-  useEffect(() => {
-    loadDashboard();
-  }, []);
-
   const loadDashboard = async () => {
     const currentUser = await getUser();
     if (!currentUser) {
@@ -67,6 +63,11 @@ export default function Dashboard() {
     setTodayCheckins(checkinsMap);
     setLoading(false);
   };
+
+  useEffect(() => {
+    loadDashboard();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleToggleHabit = async (habitKey: string) => {
     if (!user) return;
@@ -103,29 +104,31 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F8F9FA] flex items-center justify-center">
-        <div className="text-[#2C3E50]">Loading your habits...</div>
+      <div className="min-h-screen bg-gradient-to-br from-[#E8F4F8] to-[#F9FAFB] flex items-center justify-center">
+        <div className="text-[#1F2937]">Loading your habits...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA]">
+    <div className="min-h-screen bg-gradient-to-br from-[#E8F4F8] to-[#F9FAFB]">
       {/* Header */}
-      <header className="bg-white border-b border-[#B8C5D0] border-opacity-20">
+      <header className="bg-white border-b border-[#E5E7EB]">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Heart className="w-6 h-6 text-[#5FB3B3]" />
-            <span className="text-xl font-semibold text-[#2C3E50]">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#0F4C81] flex items-center justify-center">
+              <Heart className="w-6 h-6 text-white" />
+            </div>
+            <span className="text-xl font-bold text-[#1F2937]">
               Habit to Health
             </span>
           </div>
           <button
             onClick={handleSignOut}
-            className="flex items-center gap-2 px-4 py-2 text-[#2C3E50] opacity-70 hover:opacity-100 transition-opacity"
+            className="flex items-center gap-2 px-4 py-2 text-[#64748B] hover:text-[#1F2937] hover:bg-[#F9FAFB] rounded-lg transition-all"
           >
             <LogOut className="w-4 h-4" />
-            <span className="text-sm">Sign Out</span>
+            <span className="text-sm font-medium">Sign Out</span>
           </button>
         </div>
       </header>
@@ -133,35 +136,35 @@ export default function Dashboard() {
       <main className="max-w-4xl mx-auto px-6 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-[#2C3E50] mb-2">
-            Today's Check-In
+          <h1 className="text-3xl font-bold text-[#1F2937] mb-2">
+            Today&apos;s Check-In
           </h1>
-          <p className="text-[#2C3E50] opacity-70">
+          <p className="text-[#64748B]">
             {format(new Date(), "EEEE, MMMM d, yyyy")}
           </p>
         </div>
 
         {/* Progress Overview */}
-        <div className="bg-white rounded-2xl p-6 mb-6 border border-[#B8C5D0] border-opacity-10">
+        <div className="bg-white rounded-2xl p-6 mb-6 shadow-md border border-[#E5E7EB]">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-[#5FB3B3] bg-opacity-10 flex items-center justify-center">
-                <Sparkles className="w-6 h-6 text-[#5FB3B3]" />
+              <div className="w-12 h-12 rounded-xl bg-[#10B981] bg-opacity-10 flex items-center justify-center">
+                <Sparkles className="w-6 h-6 text-[#10B981]" />
               </div>
               <div>
-                <h3 className="font-semibold text-[#2C3E50]">
-                  Today's Progress
+                <h3 className="font-semibold text-[#1F2937]">
+                  Today&apos;s Progress
                 </h3>
-                <p className="text-sm text-[#2C3E50] opacity-70">
+                <p className="text-sm text-[#64748B]">
                   {completedCount} of {totalCount} habits
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="h-3 bg-[#B8C5D0] bg-opacity-10 rounded-full overflow-hidden">
+          <div className="h-3 bg-[#E5E7EB] rounded-full overflow-hidden">
             <div
-              className="h-full bg-[#5FB3B3] transition-all duration-500 rounded-full"
+              className="h-full bg-gradient-to-r from-[#10B981] to-[#0F4C81] transition-all duration-500 rounded-full"
               style={{
                 width: `${
                   totalCount > 0 ? (completedCount / totalCount) * 100 : 0
@@ -183,7 +186,7 @@ export default function Dashboard() {
             return (
               <div
                 key={habit.habit_key}
-                className="bg-white rounded-2xl p-6 border border-[#B8C5D0] border-opacity-10"
+                className="bg-white rounded-2xl p-6 shadow-md border border-[#E5E7EB] hover:shadow-lg transition-shadow"
               >
                 <div className="flex items-start gap-4">
                   <div
@@ -194,17 +197,17 @@ export default function Dashboard() {
                   </div>
 
                   <div className="flex-1">
-                    <h3 className="font-semibold text-[#2C3E50] text-lg mb-1">
+                    <h3 className="font-semibold text-[#1F2937] text-lg mb-1">
                       {habit.habit_name}
                     </h3>
 
                     {habit.trackingType === "boolean" ? (
                       <button
                         onClick={() => handleToggleHabit(habit.habit_key)}
-                        className={`mt-3 px-6 py-2 rounded-lg font-medium transition-all ${
+                        className={`mt-3 px-6 py-2.5 rounded-xl font-semibold transition-all shadow-sm ${
                           checkin.completed
-                            ? "bg-[#8BAA8C] text-white"
-                            : "bg-[#B8C5D0] bg-opacity-20 text-[#2C3E50] hover:bg-opacity-30"
+                            ? "bg-[#10B981] text-white shadow-[#10B981]/20"
+                            : "bg-[#E5E7EB] text-[#64748B] hover:bg-[#0F4C81] hover:text-white"
                         }`}
                       >
                         {checkin.completed ? "Completed ✓" : "Mark Complete"}
@@ -218,10 +221,10 @@ export default function Dashboard() {
                               onClick={() =>
                                 handleScaleChange(habit.habit_key, value)
                               }
-                              className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${
+                              className={`flex-1 py-2.5 px-3 rounded-xl text-sm font-semibold transition-all ${
                                 checkin.value === value
-                                  ? "bg-[#B4A7D6] text-white"
-                                  : "bg-[#B8C5D0] bg-opacity-10 text-[#2C3E50] hover:bg-opacity-20"
+                                  ? "bg-[#A78BFA] text-white shadow-md"
+                                  : "bg-[#E5E7EB] text-[#64748B] hover:bg-[#A78BFA] hover:bg-opacity-20"
                               }`}
                             >
                               {value}
@@ -229,10 +232,8 @@ export default function Dashboard() {
                           ))}
                         </div>
                         <div className="flex justify-between mt-2 px-1">
-                          <span className="text-xs text-[#2C3E50] opacity-50">
-                            Poor
-                          </span>
-                          <span className="text-xs text-[#2C3E50] opacity-50">
+                          <span className="text-xs text-[#64748B]">Poor</span>
+                          <span className="text-xs text-[#64748B]">
                             Excellent
                           </span>
                         </div>
@@ -249,45 +250,43 @@ export default function Dashboard() {
         <div className="grid md:grid-cols-2 gap-4">
           <button
             onClick={() => router.push("/progress")}
-            className="bg-white rounded-2xl p-6 border border-[#B8C5D0] border-opacity-10 hover:border-[#5FB3B3] hover:border-opacity-40 transition-all text-left group"
+            className="bg-white rounded-2xl p-6 shadow-md border border-[#E5E7EB] hover:border-[#0F4C81] hover:shadow-lg transition-all text-left group"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-[#F5A97F] bg-opacity-10 flex items-center justify-center">
-                  <TrendingUp className="w-6 h-6 text-[#F5A97F]" />
+                <div className="w-12 h-12 rounded-xl bg-[#38BDF8] bg-opacity-10 flex items-center justify-center">
+                  <TrendingUp className="w-6 h-6 text-[#38BDF8]" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-[#2C3E50]">
+                  <h3 className="font-semibold text-[#1F2937]">
                     View Progress
                   </h3>
-                  <p className="text-sm text-[#2C3E50] opacity-70">
+                  <p className="text-sm text-[#64748B]">
                     See your weekly patterns
                   </p>
                 </div>
               </div>
-              <ChevronRight className="w-5 h-5 text-[#2C3E50] opacity-40 group-hover:opacity-100 transition-opacity" />
+              <ChevronRight className="w-5 h-5 text-[#64748B] group-hover:text-[#0F4C81] transition-colors" />
             </div>
           </button>
 
           <button
             onClick={() => router.push("/insights")}
-            className="bg-white rounded-2xl p-6 border border-[#B8C5D0] border-opacity-10 hover:border-[#5FB3B3] hover:border-opacity-40 transition-all text-left group"
+            className="bg-white rounded-2xl p-6 shadow-md border border-[#E5E7EB] hover:border-[#0F4C81] hover:shadow-lg transition-all text-left group"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-[#B4A7D6] bg-opacity-10 flex items-center justify-center">
-                  <Sparkles className="w-6 h-6 text-[#B4A7D6]" />
+                <div className="w-12 h-12 rounded-xl bg-[#A78BFA] bg-opacity-10 flex items-center justify-center">
+                  <Sparkles className="w-6 h-6 text-[#A78BFA]" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-[#2C3E50]">
+                  <h3 className="font-semibold text-[#1F2937]">
                     Weekly Insights
                   </h3>
-                  <p className="text-sm text-[#2C3E50] opacity-70">
-                    Gentle encouragement
-                  </p>
+                  <p className="text-sm text-[#64748B]">Gentle encouragement</p>
                 </div>
               </div>
-              <ChevronRight className="w-5 h-5 text-[#2C3E50] opacity-40 group-hover:opacity-100 transition-opacity" />
+              <ChevronRight className="w-5 h-5 text-[#64748B] group-hover:text-[#0F4C81] transition-colors" />
             </div>
           </button>
         </div>

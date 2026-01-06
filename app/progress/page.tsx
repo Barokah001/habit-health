@@ -7,7 +7,7 @@ import { AVAILABLE_HABITS } from "../../lib/habit";
 import { Heart, ArrowLeft, Calendar } from "lucide-react";
 import { format, subDays } from "date-fns";
 import { User } from "@supabase/supabase-js";
-import { EnrichedUserHabit, WeekData } from "../../types";
+import { DailyCheckin, EnrichedUserHabit, WeekData } from "../../types";
 
 export default function Progress() {
   const router = useRouter();
@@ -15,10 +15,6 @@ export default function Progress() {
   const [userHabits, setUserHabits] = useState<EnrichedUserHabit[]>([]);
   const [weekData, setWeekData] = useState<WeekData>({ dates: [], data: {} });
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    loadProgress();
-  }, []);
 
   const loadProgress = async () => {
     const currentUser = await getUser();
@@ -48,7 +44,7 @@ export default function Progress() {
     );
 
     // Organize data by date and habit
-    const dataByDate: Record<string, Record<string, any>> = {};
+    const dataByDate: Record<string, Record<string, DailyCheckin>> = {};
     const last7Days: string[] = [];
     for (let i = 6; i >= 0; i--) {
       const date = format(subDays(new Date(), i), "yyyy-MM-dd");
@@ -67,31 +63,36 @@ export default function Progress() {
     setLoading(false);
   };
 
+  useEffect(() => {
+    loadProgress();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F8F9FA] flex items-center justify-center">
-        <div className="text-[#2C3E50]">Loading progress...</div>
+      <div className="min-h-screen bg-gradient-to-br from-[#E8F4F8] to-[#F9FAFB] flex items-center justify-center">
+        <div className="text-[#1F2937]">Loading progress...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA]">
+    <div className="min-h-screen bg-gradient-to-br from-[#E8F4F8] to-[#F9FAFB]">
       {/* Header */}
-      <header className="bg-white border-b border-[#B8C5D0] border-opacity-20">
+      <header className="bg-white border-b border-[#E5E7EB]">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button
               onClick={() => router.push("/dashboard")}
-              className="w-10 h-10 rounded-full hover:bg-[#B8C5D0] hover:bg-opacity-10 flex items-center justify-center transition-colors"
+              className="w-10 h-10 rounded-xl hover:bg-[#E8F4F8] flex items-center justify-center transition-colors"
             >
-              <ArrowLeft className="w-5 h-5 text-[#2C3E50]" />
+              <ArrowLeft className="w-5 h-5 text-[#1F2937]" />
             </button>
-            <div className="flex items-center gap-2">
-              <Heart className="w-6 h-6 text-[#5FB3B3]" />
-              <span className="text-xl font-semibold text-[#2C3E50]">
-                Progress
-              </span>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[#0F4C81] flex items-center justify-center">
+                <Heart className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-xl font-bold text-[#1F2937]">Progress</span>
             </div>
           </div>
         </div>
@@ -99,31 +100,29 @@ export default function Progress() {
 
       <main className="max-w-4xl mx-auto px-6 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-[#2C3E50] mb-2">
+          <h1 className="text-3xl font-bold text-[#1F2937] mb-2">
             Your Weekly Journey
           </h1>
-          <p className="text-[#2C3E50] opacity-70">
-            Last 7 days of habit tracking
-          </p>
+          <p className="text-[#64748B]">Last 7 days of habit tracking</p>
         </div>
 
         {/* Week Overview */}
-        <div className="bg-white rounded-2xl p-6 mb-6 border border-[#B8C5D0] border-opacity-10 overflow-x-auto">
+        <div className="bg-white rounded-2xl p-6 mb-6 shadow-md border border-[#E5E7EB]">
           <div className="flex items-center gap-2 mb-6">
-            <Calendar className="w-5 h-5 text-[#5FB3B3]" />
-            <h2 className="font-semibold text-[#2C3E50]">Weekly Overview</h2>
+            <Calendar className="w-5 h-5 text-[#0F4C81]" />
+            <h2 className="font-semibold text-[#1F2937]">Weekly Overview</h2>
           </div>
 
           <div className="min-w-[600px]">
             {/* Date Headers */}
             <div className="grid grid-cols-8 gap-2 mb-4">
-              <div className="text-sm font-medium text-[#2C3E50] opacity-70"></div>
+              <div className="text-sm font-medium text-[#64748B]"></div>
               {weekData.dates.map((date) => (
                 <div key={date} className="text-center">
-                  <div className="text-xs text-[#2C3E50] opacity-50">
+                  <div className="text-xs text-[#64748B]">
                     {format(new Date(date), "EEE")}
                   </div>
-                  <div className="text-sm font-medium text-[#2C3E50]">
+                  <div className="text-sm font-semibold text-[#1F2937]">
                     {format(new Date(date), "d")}
                   </div>
                 </div>
@@ -148,7 +147,7 @@ export default function Progress() {
                         style={{ color: habit.color }}
                       />
                     </div>
-                    <span className="text-sm text-[#2C3E50] font-medium truncate">
+                    <span className="text-sm text-[#1F2937] font-semibold truncate">
                       {habit.habit_name.split(" ")[0]}
                     </span>
                   </div>
@@ -163,15 +162,15 @@ export default function Progress() {
                         className="flex items-center justify-center"
                       >
                         <div
-                          className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all ${
+                          className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
                             isCompleted
-                              ? "bg-[#8BAA8C] bg-opacity-20"
-                              : "bg-[#B8C5D0] bg-opacity-10"
+                              ? "bg-[#10B981] bg-opacity-10 shadow-sm"
+                              : "bg-[#E5E7EB]"
                           }`}
                         >
                           {isCompleted && (
                             <div
-                              className="w-3 h-3 rounded-full"
+                              className="w-4 h-4 rounded-full shadow-sm"
                               style={{ backgroundColor: habit.color }}
                             ></div>
                           )}
@@ -197,7 +196,7 @@ export default function Progress() {
             return (
               <div
                 key={habit.habit_key}
-                className="bg-white rounded-2xl p-6 border border-[#B8C5D0] border-opacity-10"
+                className="bg-white rounded-2xl p-6 shadow-md border border-[#E5E7EB] hover:shadow-lg transition-shadow"
               >
                 <div className="flex items-start gap-4 mb-4">
                   <div
@@ -207,10 +206,10 @@ export default function Progress() {
                     <Icon className="w-6 h-6" style={{ color: habit.color }} />
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-semibold text-[#2C3E50] mb-1">
+                    <h3 className="font-semibold text-[#1F2937] mb-1">
                       {habit.habit_name}
                     </h3>
-                    <p className="text-2xl font-bold text-[#2C3E50]">
+                    <p className="text-2xl font-bold text-[#1F2937]">
                       {completedDays}/7 days
                     </p>
                   </div>
@@ -218,14 +217,12 @@ export default function Progress() {
 
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span className="text-[#2C3E50] opacity-70">
-                      Consistency
-                    </span>
-                    <span className="font-medium text-[#2C3E50]">
+                    <span className="text-[#64748B]">Consistency</span>
+                    <span className="font-semibold text-[#1F2937]">
                       {consistency}%
                     </span>
                   </div>
-                  <div className="h-2 bg-[#B8C5D0] bg-opacity-10 rounded-full overflow-hidden">
+                  <div className="h-2 bg-[#E5E7EB] rounded-full overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all duration-500"
                       style={{
@@ -241,8 +238,8 @@ export default function Progress() {
         </div>
 
         {/* Encouragement */}
-        <div className="mt-6 bg-[#5FB3B3] bg-opacity-10 rounded-2xl p-6">
-          <p className="text-center text-[#2C3E50] font-medium">
+        <div className="mt-6 bg-gradient-to-r from-[#10B981] to-[#0F4C81] bg-opacity-10 rounded-2xl p-6 shadow-md">
+          <p className="text-center text-[#1F2937] font-semibold text-lg">
             &quot;Small steps, repeated daily. That&apos;s the secret.&quot;
           </p>
         </div>
